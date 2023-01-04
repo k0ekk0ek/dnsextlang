@@ -1,0 +1,91 @@
+
+
+static const struct type_descriptor descriptors[] = {
+{{#records[0..52]}}
+  { .info = {
+      {{#name}}
+      .name = "{{.upper}}",
+      .length = sizeof("{{.upper}}") - 1,
+      {{/name}}
+      {{^name}}
+      .name = NULL,
+      .length = 0,
+      {{/name}}
+      .type = {{.}},
+      .options = 0{{#options[a]}} | ZONE_ANY{{/options[a]}}{{#options[i]}} | ZONE_IN{{/options[i]}},
+      {{#freetext}}
+      .description = "{{.}}"
+      {{/freetext}}
+      {{^freetext}}
+      .description = NULL
+      {{/freetext}}
+    },
+    .rdata = (struct rdata_descriptor[]){
+    {{#fields}}
+      { { .info = {
+            .name = "{{name}}",
+            .length = sizeof("{{name}}") - 1,
+            {{#type[i1]}}
+            .type = ZONE_INT8,
+            {{/type[i1]}}
+            {{#type[i2]}}
+            .type = ZONE_INT16,
+            {{/type[i2]}}
+            {{#type[i4]}}
+            .type = ZONE_INT32,
+            {{/type[i4]}}
+            {{#type[a]}}
+            .type = ZONE_IP4,
+            {{/type[a]}}
+            {{#type[aaaa]}}
+            .type = ZONE_IP6,
+            {{/type[aaaa]}}
+            {{#type[N]}}
+            .type = ZONE_NAME{{#qualifiers[C]}} | ZONE_COMPRESSED{{/qualifiers[C]}},
+            {{/type[N]}}
+            {{#type[S]}}
+            .type = ZONE_STRING{{#qualifiers[M]}} | ZONE_SEQUENCE{{/qualifiers[M]}},
+            {{/type[S]}}
+            {{#type[B32]}}
+            .type = ZONE_BLOB | ZONE_BASE32,
+            {{/type[B32]}}
+            {{#type[B64]}}
+            .type = ZONE_BLOB | ZONE_BASE64,
+            {{/type[B64]}}
+            {{#type[X]}}
+            {{#qualifiers[C]}}
+            .type = ZONE_STRING | ZONE_BASE16,
+            {{/qualifiers[C]}}
+            {{^qualifiers[C]}}
+            .type = ZONE_BLOB | ZONE_BASE16,
+            {{/qualifiers[C]}}
+            {{/type[X]}}
+            {{#type[T]}}
+            {{#qualifiers[L]}}
+            .type = ZONE_TTL,
+            {{/qualifiers[L]}}
+            {{^qualifiers[L]}}
+            .type = ZONE_TIME,
+            {{/qualifiers[L]}}
+            {{/type[T]}}
+            .symbols = {
+              .symbols = (zone_symbol_t[]){
+                {{#type[i1,i2,i4]}}
+                {{#symbols[a-*]}}
+                { { sizeof("{{name}}") - 1, "{{name}}" }, {{value}} },
+                {{/symbols[a-*]}}
+                {{/type[i1,i2,i4]}}
+                { { 0, NULL }, 0 }
+              },
+              .length = 0
+            },
+            .description = "{{freetext}}"
+          },
+        },
+      },
+    {{/fields}}
+      { { NULL, 0, 0, 0, { 0, NULL }, NULL }, 0 }
+    }
+  },
+{{/records[0..52]}}
+};
